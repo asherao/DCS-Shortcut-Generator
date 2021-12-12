@@ -10,9 +10,10 @@ using System.Diagnostics;
 
 /* Possible future upgrades:
  * - Expand the image selection to .bmp
- * - Expand the image selection to any selected image
+ *     - Expand the image selection to any selected image
  * - Integrate OptionsPresets swaps
  * - Have a "Pull Lua" feature so the user does not have to manually copy/paste into their folder
+ * - Adjust Backup creation logic. Currently the backup is of the file that it replaced
  */
 
 namespace DCS_Shortcut_Generator
@@ -425,7 +426,9 @@ namespace DCS_Shortcut_Generator
 
             if (generatedTarget.Length > 259)
             {
-                System.Windows.MessageBox.Show("Export Target is too long. Export canceled, sorry. See README for details.");
+                int numberOfCharactersOver = generatedTarget.Length - 259;
+                System.Windows.MessageBox.Show("Export Target is " + numberOfCharactersOver + " characters too long. Export canceled, sorry. " +
+                    "\nSee README for details. Please define shorter paths.");
                 return;
             }
 
