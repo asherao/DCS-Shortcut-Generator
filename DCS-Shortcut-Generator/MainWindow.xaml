@@ -6,7 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:DCS_Shortcut_Generator"
         mc:Ignorable="d"
-        Title="DCS Shortcut Generator v1 by Bailey" Height="380" Width="460">
+        Title="DCS Shortcut Generator v1.1 by Bailey" Height="390" Width="460">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5"/>
@@ -32,13 +32,13 @@
             <RowDefinition Height="5"/>
         </Grid.RowDefinitions>
 
-        <TextBox x:Name="textBlock_userDcsExeFile" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Height="19" VerticalAlignment="Center"
+        <TextBox x:Name="textBlock_userDcsExeFile" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Height="20" VerticalAlignment="Center"
                  IsEnabled="False"/>
-        <Button x:Name="button_userDcsExeFile" Content="Select DCS.exe" Grid.Row="1" Grid.Column="1" Margin="5" Height="19" VerticalAlignment="Center" Click="button_userDcsExeFile_Click"/>
+        <Button x:Name="button_userDcsExeFile" Content="Select DCS.exe" Grid.Row="1" Grid.Column="1" Margin="5" Height="20" VerticalAlignment="Center" Click="button_userDcsExeFile_Click"/>
 
-        <TextBox x:Name="textBlock_userOptionsFile" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Height="19" VerticalAlignment="Center"
+        <TextBox x:Name="textBlock_userOptionsFile" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Height="20" VerticalAlignment="Center"
                  IsEnabled="False"/>
-        <Button x:Name="button_userOptionsFile" Content="Select DCS Options.lua" Grid.Row="2" Grid.Column="1" Margin="5" Height="19" VerticalAlignment="Center" Click="button_userOptionsFile_Click"/>
+        <Button x:Name="button_userOptionsFile" Content="Select DCS Options.lua" Grid.Row="2" Grid.Column="1" Margin="5" Height="20" VerticalAlignment="Center" Click="button_userOptionsFile_Click"/>
 
         <!--<Label Content="Enable VR"  Grid.Row="3" Grid.Column="1" Margin="5" VerticalAlignment="Center"/>-->
         <ComboBox x:Name="comboBox_userVR" Grid.Column="1"  HorizontalAlignment="Stretch" Margin="5" Grid.Row="3" VerticalAlignment="Center">
@@ -50,12 +50,12 @@
         
         <Label Content="Shortcut Name"  Grid.Row="4" Grid.Column="1" Margin="5" VerticalAlignment="Center"/>
         <TextBox x:Name="textBlock_userShortcutName" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" 
-                 Margin="5" Height="19" VerticalAlignment="Center" PreviewTextInput="NumberDigitValidationTextBox"
+                 Margin="5" Height="20" VerticalAlignment="Center" PreviewTextInput="NumberDigitValidationTextBox"
                  CommandManager.PreviewExecuted="textBox_PreviewExecuted" ContextMenu="{x:Null}"/>
         
         <Label Content="Shortcut Description"  Grid.Row="7" Grid.Column="1" Margin="5" VerticalAlignment="Center"/>
         <TextBox x:Name="textBlock_userShortcutDescription" Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="2" 
-                 Margin="5" Height="19" VerticalAlignment="Center" PreviewTextInput="NumberDigitValidationTextBox"
+                 Margin="5" Height="20" VerticalAlignment="Center" PreviewTextInput="NumberDigitValidationTextBox"
                  CommandManager.PreviewExecuted="textBox_PreviewExecuted" ContextMenu="{x:Null}"/>
 
         <StackPanel Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="3">
@@ -64,30 +64,30 @@
            
         </StackPanel>
 
-        <TextBox x:Name="textBlock_userIconLocation" Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Height="19" 
+        <TextBox x:Name="textBlock_userIconLocation" Grid.Row="8" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Height="20" 
                  VerticalAlignment="Center" IsEnabled="False"/>
         <Button x:Name="button_userIconLocation" Content="Select Icon Image" Grid.Row="8" Grid.Column="1" Margin="5" 
-                Height="19" VerticalAlignment="Center" Click="button_userIconLocation_Click"/>
+                Height="20" VerticalAlignment="Center" Click="button_userIconLocation_Click"/>
         
-        <TextBox x:Name="textBlock_userOptionsNewFile" Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Height="19" 
+        <TextBox x:Name="textBlock_userOptionsNewFile" Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Height="20" 
                  VerticalAlignment="Center" IsEnabled="False"/>
         <Button x:Name="button_userOptionsNewFile" Content="Select Swap Options.lua" Grid.Row="9" Grid.Column="1" Margin="5" 
-                Height="19" VerticalAlignment="Center" Click="button_userOptionsNewFile_Click"/>
+                Height="20" VerticalAlignment="Center" Click="button_userOptionsNewFile_Click"/>
 
         
         
         <Label Content="DCS Width Override" Grid.Row="10" Grid.Column="1"  Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <TextBox x:Name="textBlock_dcsWidth" Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="1" Margin="5" Width="75" Height="19" 
+        <TextBox x:Name="textBlock_dcsWidth" Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="1" Margin="5" Width="75" Height="20" 
                  VerticalAlignment="Center" HorizontalAlignment="Left" PreviewTextInput="NumberValidationTextBox" PreviewKeyDown="textBlock_dcsWidth_PreviewKeyDown"
                  CommandManager.PreviewExecuted="textBox_PreviewExecuted" ContextMenu="{x:Null}"/>
 
 
         <Label Content="DCS Height Override" Grid.Row="11" Grid.Column="1" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <TextBox x:Name="textBlock_dcsHeight" Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="1" Margin="5" Width="75" Height="19" 
+        <TextBox x:Name="textBlock_dcsHeight" Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="1" Margin="5" Width="75" Height="20" 
                  VerticalAlignment="Center" HorizontalAlignment="Left" PreviewTextInput="NumberValidationTextBox" 
                  PreviewKeyDown="textBlock_dcsHeight_PreviewKeyDown" CommandManager.PreviewExecuted="textBox_PreviewExecuted" ContextMenu="{x:Null}"/>
 
-        <Button x:Name="button_export" Content="Export" Grid.Row="5" Grid.Column="3" Margin="5" Height="19" VerticalAlignment="Center" Click="button_export_Click"/>
+        <Button x:Name="button_export" Content="Export" Grid.Row="5" Grid.Column="3" Margin="5" Height="20" VerticalAlignment="Center" Click="button_export_Click"/>
 
     </Grid>
 </Window>

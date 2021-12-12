@@ -583,7 +583,15 @@ namespace DCS_Shortcut_Generator
             string userOptionsBetaLocation = @"C:\Users\" + userName + @"\Saved Games\DCS.openbeta\Config";
             string userOptionsAlphaLocation = @"C:\Users\" + userName + @"\Saved Games\DCS.openalpha\Config";
 
-            if (Directory.Exists(userOptionsStableLocation))
+            //these are to assist the suer in locating their correct directories. 
+            //for the first one here, if there is something already in the text block, assume the user wants to 
+            //access the same folder, so set the initial directory there. Otherwise, try the other folders
+            if (!String.IsNullOrEmpty(textBlock_userOptionsNewFile.Text) 
+                && Directory.Exists(System.IO.Path.GetDirectoryName(textBlock_userOptionsNewFile.Text)))
+            {
+                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(textBlock_userOptionsNewFile.Text);
+            }
+            else if (Directory.Exists(userOptionsStableLocation))
             {
                 dlg.InitialDirectory = userOptionsStableLocation;
             }
@@ -655,7 +663,16 @@ namespace DCS_Shortcut_Generator
             dlg.Title = "Example: " + @"C:\Program Files\Eagle Dynamics\DCS World\FUI\DCS-1.ico";
 
             //a guess for the default install location
-            dlg.InitialDirectory = @"C:\Program Files\Eagle Dynamics\DCS World\FUI";
+            if (!String.IsNullOrEmpty(textBlock_userIconLocation.Text)
+                && Directory.Exists(System.IO.Path.GetDirectoryName(textBlock_userIconLocation.Text)))
+            {
+                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(textBlock_userIconLocation.Text);
+            }
+            else
+            {
+                dlg.InitialDirectory = @"C:\Program Files\Eagle Dynamics\DCS World\FUI";
+            }
+            
 
             // Display OpenFileDialog by calling ShowDialog method 
             Nullable<bool> result = dlg.ShowDialog();
