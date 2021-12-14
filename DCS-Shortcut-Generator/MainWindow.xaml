@@ -6,7 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:DCS_Shortcut_Generator"
         mc:Ignorable="d"
-        Title="DCS Shortcut Generator v1.1 by Bailey" Height="390" Width="460">
+        Title="DCS Shortcut Generator v1.2 by Bailey" Height="390" Width="500">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5"/>

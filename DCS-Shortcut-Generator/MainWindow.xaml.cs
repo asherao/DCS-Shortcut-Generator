@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
+using Microsoft.Win32;
 
 /* Possible future upgrades:
  * - Expand the image selection to .bmp
@@ -14,6 +15,7 @@ using System.Diagnostics;
  * - Integrate OptionsPresets swaps
  * - Have a "Pull Lua" feature so the user does not have to manually copy/paste into their folder
  * - Adjust Backup creation logic. Currently the backup is of the file that it replaced
+ * - Aut odetect the users dcs path
  */
 
 namespace DCS_Shortcut_Generator
@@ -37,6 +39,124 @@ namespace DCS_Shortcut_Generator
             }
             //else...run the generator
             InitializeComponent();
+            PredictUserDcsExePath();
+            PredictUserOptionsLuaPath();
+        }
+
+        private void PredictUserOptionsLuaPath()//prediction for the users default options lua file
+        {
+            string userName = System.Environment.UserName;
+
+            string userOptionsStableLocation = @"C:\Users\" + userName + @"\Saved Games\DCS\Config\options.lua";
+            string userOptionsBetaLocation = @"C:\Users\" + userName + @"\Saved Games\DCS.openbeta\options.lua";
+            string userOptionsAlphaLocation = @"C:\Users\" + userName + @"\Saved Games\DCS.openalpha\options.lua";
+
+            //these are to assist the user in locating their correct directory by auto-populating it on load
+            if (System.IO.File.Exists(userOptionsStableLocation))
+            {
+                textBlock_userOptionsFile.Text = userOptionsStableLocation;
+                //MessageBox.Show("Case 1");//debug
+            }
+            else if (System.IO.File.Exists(userOptionsBetaLocation))
+            {
+                textBlock_userOptionsFile.Text = userOptionsBetaLocation;
+                //MessageBox.Show("Case 2");//debug
+            }
+            else if (System.IO.File.Exists(userOptionsAlphaLocation))
+            {
+                textBlock_userOptionsFile.Text = userOptionsAlphaLocation;
+                //MessageBox.Show("Case 3");//debug
+            }
+            else
+            {
+                //do nothing and leave it blank
+                //MessageBox.Show("Case 4");//debug
+            }
+        }
+
+        private void PredictUserDcsExePath()
+        {
+            //this will attempt to read the registry for the dcs.exe location
+            //it will try dcs stable, beta, but not steam at the moment.
+            //if it does not find any of the above, the field will revert to nothing, as usual
+
+            /* NOTES
+            //https://docs.microsoft.com/en-us/dotnet/api/microsoft.win32.registry.getvalue?view=net-6.0
+            //@"HKEY_CURRENT_USER\Software\Eagle Dynamics\DCS World OpenBeta\Path";
+            //@"HKEY_CURRENT_USER\Software\Eagle Dynamics\DCS World\Path";
+            string[] strings = { "0" };
+            const string keyNameBeta = @"HKEY_CURRENT_USER\SOFTWARE\Eagle Dynamics\DCS World OpenBeta";
+            const string keyNameStable = @"HKEY_CURRENT_USER\Software\Eagle Dynamics\DCS World";
+            const string keyNameSteam = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 223750";//???TODO: find this out
+            //is it @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 223750" InstallLocation?
+
+            string dcsLocation = (string)Registry.GetValue(keyNameBeta, "Path", strings);//results in "C:\Games\DCS World OpenBeta"
+                                                                                         //add "\bin\DCS.exe"
+                                                                                         //string dcsLocation = (string)Registry.GetValue(keyNameStable, "Path", strings);
+                                                                                         //string dcsLocation = (string)Registry.GetValue(keyNameSteam, "InstallLocation", strings);
+            */
+
+            //this is the DCS Steam Attempt. It is not working. TODO: get this to work
+            /*
+            if (String.IsNullOrEmpty(textBlock_userDcsExeFile.Text))
+            {
+                try
+                {
+                    string[] strings = { "0" };
+                    const string keyNameSteam = @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 223750";
+                    string dcsLocation = (string)Registry.GetValue(keyNameSteam, "InstallLocation", strings);
+                    textBlock_userDcsExeFile.Text = dcsLocation;
+                    System.Windows.MessageBox.Show(dcsLocation);
+                }
+                catch
+                {
+                    //leave blank because there is nothing to do but to continue and use the default
+                }
+            }
+            */
+
+            //this is the open beta attampt
+            //if the field is empty, which it should be because the program just booted
+            if (String.IsNullOrEmpty(textBlock_userDcsExeFile.Text))
+            {
+                try
+                {
+                    string[] strings = { "0" };//init a string array
+                    const string keyNameBeta = @"HKEY_CURRENT_USER\SOFTWARE\Eagle Dynamics\DCS World OpenBeta";//this is the key we are looking for
+                    string dcsLocation = (string)Registry.GetValue(keyNameBeta, "Path", strings);//"Path is the subkey(?)
+                    string addOnPath = @"bin\DCS.exe";//the above terminates in the main folder path. use this to continue to the exe
+                    string[] paths = { dcsLocation, addOnPath };//prepariong for the Combine
+                    textBlock_userDcsExeFile.Text = Path.Combine(paths);//populate the text field with the result
+                    //System.Windows.MessageBox.Show(dcsLocation);//debug
+                    //System.Windows.MessageBox.Show(addOnPath);//debug
+                    //System.Windows.MessageBox.Show(textBlock_userDcsExeFile.Text);//debug
+                }
+                catch
+                {
+                    //leave blank because there is nothing to do but continue and use the default
+                }
+            }
+
+            //same as abive, but for dcs stable version
+            if (String.IsNullOrEmpty(textBlock_userDcsExeFile.Text))
+            {
+                try
+                {
+                    string[] strings = { "0" };
+                    const string keyNameStable = @"HKEY_CURRENT_USER\Software\Eagle Dynamics\DCS World";
+                    string dcsLocation = (string)Registry.GetValue(keyNameStable, "Path", strings);
+                    string addOnPath = @"bin\DCS.exe";
+                    string[] paths = { dcsLocation, addOnPath };
+                    textBlock_userDcsExeFile.Text = Path.Combine(paths);
+                    //System.Windows.MessageBox.Show(dcsLocation);
+                    //System.Windows.MessageBox.Show(addOnPath);
+                    //System.Windows.MessageBox.Show(textBlock_userDcsExeFile.Text);
+                }
+                catch
+                {
+                    //leave blank because there is nothing to do but continue and use the default
+                }
+            }
         }
 
         private void processAsShortcut()
@@ -583,7 +703,7 @@ namespace DCS_Shortcut_Generator
             string userOptionsBetaLocation = @"C:\Users\" + userName + @"\Saved Games\DCS.openbeta\Config";
             string userOptionsAlphaLocation = @"C:\Users\" + userName + @"\Saved Games\DCS.openalpha\Config";
 
-            //these are to assist the suer in locating their correct directories. 
+            //these are to assist the user in locating their correct directories. 
             //for the first one here, if there is something already in the text block, assume the user wants to 
             //access the same folder, so set the initial directory there. Otherwise, try the other folders
             if (!String.IsNullOrEmpty(textBlock_userOptionsNewFile.Text) 
