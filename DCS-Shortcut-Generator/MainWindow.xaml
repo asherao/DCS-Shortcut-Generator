@@ -6,7 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:DCS_Shortcut_Generator"
         mc:Ignorable="d"
-        Title="DCS Shortcut Generator v1.2 by Bailey" Height="390" Width="500">
+        Title="DCS Shortcut Generator v1.2 by Bailey" Height="450" Width="500">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5"/>
@@ -18,6 +18,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="5"/>
+            <RowDefinition Height="AUTO"/>
             <RowDefinition Height="AUTO"/>
             <RowDefinition Height="AUTO"/>
             <RowDefinition Height="AUTO"/>
@@ -71,19 +72,18 @@
         
         <TextBox x:Name="textBlock_userOptionsNewFile" Grid.Row="9" Grid.Column="2" Grid.ColumnSpan="2" Margin="5" Height="20" 
                  VerticalAlignment="Center" IsEnabled="False"/>
+        <CheckBox x:Name="checkBox_updateOptions" Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="2" Margin="5"  IsEnabled="False">Keep options changes done during DCS session</CheckBox>
         <Button x:Name="button_userOptionsNewFile" Content="Select Swap Options.lua" Grid.Row="9" Grid.Column="1" Margin="5" 
                 Height="20" VerticalAlignment="Center" Click="button_userOptionsNewFile_Click"/>
-
         
-        
-        <Label Content="DCS Width Override" Grid.Row="10" Grid.Column="1"  Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <TextBox x:Name="textBlock_dcsWidth" Grid.Row="10" Grid.Column="2" Grid.ColumnSpan="1" Margin="5" Width="75" Height="20" 
+        <Label Content="DCS Width Override" Grid.Row="11" Grid.Column="1"  Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBox x:Name="textBlock_dcsWidth" Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="1" Margin="5" Width="75" Height="20" 
                  VerticalAlignment="Center" HorizontalAlignment="Left" PreviewTextInput="NumberValidationTextBox" PreviewKeyDown="textBlock_dcsWidth_PreviewKeyDown"
                  CommandManager.PreviewExecuted="textBox_PreviewExecuted" ContextMenu="{x:Null}"/>
 
 
-        <Label Content="DCS Height Override" Grid.Row="11" Grid.Column="1" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <TextBox x:Name="textBlock_dcsHeight" Grid.Row="11" Grid.Column="2" Grid.ColumnSpan="1" Margin="5" Width="75" Height="20" 
+        <Label Content="DCS Height Override" Grid.Row="12" Grid.Column="1" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBox x:Name="textBlock_dcsHeight" Grid.Row="12" Grid.Column="2" Grid.ColumnSpan="1" Margin="5" Width="75" Height="20" 
                  VerticalAlignment="Center" HorizontalAlignment="Left" PreviewTextInput="NumberValidationTextBox" 
                  PreviewKeyDown="textBlock_dcsHeight_PreviewKeyDown" CommandManager.PreviewExecuted="textBox_PreviewExecuted" ContextMenu="{x:Null}"/>
 
