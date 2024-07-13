@@ -6,7 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:DCS_Shortcut_Generator"
         mc:Ignorable="d"
-        Title="DCS Shortcut Generator v1.2 by Bailey" Height="390" Width="500">
+        Title="DCS Shortcut Generator v2.0 by Bailey" Height="390" Width="500">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5"/>
@@ -44,10 +44,14 @@
         <ComboBox x:Name="comboBox_userVR" Grid.Column="1"  HorizontalAlignment="Stretch" Margin="5" Grid.Row="3" VerticalAlignment="Center">
             <ComboBoxItem IsSelected="True">Disable VR</ComboBoxItem>
             <ComboBoxItem>Enable VR</ComboBoxItem>
-
         </ComboBox>
         <!--<CheckBox x:Name="checkbox_userVR" Content="VR enabled" Checked="false" Grid.Row="3" Grid.Column="3" VerticalAlignment="Center"/>-->
-        
+
+        <ComboBox x:Name="comboBox_launcher" Grid.Column="2"  HorizontalAlignment="Stretch" Margin="5" Grid.Row="3" VerticalAlignment="Center">
+            <ComboBoxItem IsSelected="True">Disable Launcher</ComboBoxItem>
+            <ComboBoxItem>Enable Launcher</ComboBoxItem>
+        </ComboBox>
+
         <Label Content="Shortcut Name"  Grid.Row="4" Grid.Column="1" Margin="5" VerticalAlignment="Center"/>
         <TextBox x:Name="textBlock_userShortcutName" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" 
                  Margin="5" Height="20" VerticalAlignment="Center" PreviewTextInput="NumberDigitValidationTextBox"

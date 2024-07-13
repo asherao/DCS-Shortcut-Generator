@@ -124,7 +124,7 @@ namespace DCS_Shortcut_Generator
                     string[] strings = { "0" };//init a string array
                     const string keyNameBeta = @"HKEY_CURRENT_USER\SOFTWARE\Eagle Dynamics\DCS World OpenBeta";//this is the key we are looking for
                     string dcsLocation = (string)Registry.GetValue(keyNameBeta, "Path", strings);//"Path is the subkey(?)
-                    string addOnPath = @"bin\DCS.exe";//the above terminates in the main folder path. use this to continue to the exe
+                    string addOnPath = @"bin-mt\DCS.exe";//the above terminates in the main folder path. use this to continue to the exe
                     string[] paths = { dcsLocation, addOnPath };//prepariong for the Combine
                     textBlock_userDcsExeFile.Text = Path.Combine(paths);//populate the text field with the result
                     //System.Windows.MessageBox.Show(dcsLocation);//debug
@@ -145,7 +145,7 @@ namespace DCS_Shortcut_Generator
                     string[] strings = { "0" };
                     const string keyNameStable = @"HKEY_CURRENT_USER\Software\Eagle Dynamics\DCS World";
                     string dcsLocation = (string)Registry.GetValue(keyNameStable, "Path", strings);
-                    string addOnPath = @"bin\DCS.exe";
+                    string addOnPath = @"bin-mt\DCS.exe";
                     string[] paths = { dcsLocation, addOnPath };
                     textBlock_userDcsExeFile.Text = Path.Combine(paths);
                     //System.Windows.MessageBox.Show(dcsLocation);
@@ -166,56 +166,56 @@ namespace DCS_Shortcut_Generator
             args = args.Skip(1).ToArray();//this removed the first element of the array, which was the path of this app
 
             //the minimum args length will be 3 due to the condition checking of the generator
+            //arg0 = dcs exe path
+            //arg1 = vr option
+            //arg2 = launcher option
 
-            if (args.Length == 3)//the options lua was defined. do the same thing as Length == 2
+            if (args.Length == 3)//exe, vr, and launcher defined
             {
-
-                Console.WriteLine("Condition 3");
-
+                //MessageBox.Show("Condition 3");//debug
                 string arg_dcsVrOrNoVr = args[1];
-                string vrargument;
-                string arg_dcsOptionsLuaFileLocation;
-
-
-                if (System.IO.File.Exists(args[2]))//if the new options lua file does not exist, exit
-                {
-                    arg_dcsOptionsLuaFileLocation = args[2];//will remain unused in this Condition
-                }
-                else
-                {
-                    Console.WriteLine("The DCS Options.lua file cannot be found.");
-                    MessageBox.Show("The DCS Options.lua file cannot be found.");
-                    return;
-                }
+                string vrArgument;
+                string arg_dcsLauncher = args[2];
+                string launcherArgument;
 
                 string arg_dcsExeFileLocation;
                 if (System.IO.File.Exists(args[0]))
                 {
                     arg_dcsExeFileLocation = args[0];
-                    Console.WriteLine(arg_dcsExeFileLocation);
-                    Console.WriteLine(arg_dcsVrOrNoVr);
 
                     if (arg_dcsVrOrNoVr.Equals("vr"))
                     {
-                        vrargument = ("--force_enable_VR");
+                        vrArgument = ("--force_enable_VR");
                     }
                     else if (arg_dcsVrOrNoVr.Equals("novr"))
                     {
-                        vrargument = ("--force_disable_VR");
+                        vrArgument = ("--force_disable_VR");
                     }
                     else
                     {
-                        Console.WriteLine("The VR argument is not valid.");
-                        MessageBox.Show("The VR argument is not valid.");
+                        MessageBox.Show("The VR argument is not valid. (Error 3)");
                         return;//the vr argument was not valid
                     }
 
-                    Process.Start(@arg_dcsExeFileLocation, vrargument);
+                    if (arg_dcsLauncher.Equals("no-launcher"))
+                    {
+                        launcherArgument = ("--no-launcher");
+                    }
+                    else if (arg_dcsLauncher.Equals("launcher"))
+                    {
+                        launcherArgument = ("");
+                    }
+                    else
+                    {
+                        MessageBox.Show("The Launcher argument is not valid. (Error 3)");
+                        return;//the Launcher argument was not valid
+                    }
+
+                    Process.Start(@arg_dcsExeFileLocation, vrArgument + " " + launcherArgument);
                 }
                 else
                 {
-                    Console.WriteLine("The DCS exe path cannot be found.");
-                    MessageBox.Show("The DCS exe path cannot be found.");
+                    MessageBox.Show("The DCS exe path cannot be found. (Error 3)");
                     return;//the path that the user entered did not exist
                 }
             }//end of condition 3
@@ -224,205 +224,186 @@ namespace DCS_Shortcut_Generator
             {                           //if the last arg is a number, then this fails. 
                                         //If its a path, then use it to replace the options lua path
                                         //due to how this version of the program works, you should never see just 1 dimension
-                Console.WriteLine("Condition 4");
+
+                //MessageBox.Show("Condition 4");//debug
 
                 //file exists checks
                 if (!System.IO.File.Exists(args[0]))
                 {
-                    Console.WriteLine("The DCS exe path cannot be found.");
-                    MessageBox.Show("The DCS exe path cannot be found.");
+                    MessageBox.Show("The DCS exe path cannot be found. (Error 4)");
                     return;
-                }
-
-                if (!System.IO.File.Exists(args[2]))
-                {
-                    Console.WriteLine("The DCS Options.lua file cannot be found.");
-                    MessageBox.Show("The DCS Options.lua file cannot be found.");
-                    return;
-                }
-
-                string arg_dcsVrOrNoVr = args[1];
-                string vrargument;
-                //determine if the user wants to use VR or not
-                if (arg_dcsVrOrNoVr.Equals("vr"))
-                {
-                    vrargument = ("--force_enable_VR");
-                }
-                else if (arg_dcsVrOrNoVr.Equals("novr"))
-                {
-                    vrargument = ("--force_disable_VR");
-                }
-                else//if there isnt a matching entry, just quit
-                {
-                    Console.WriteLine("The VR argument is not valid.");
-                    MessageBox.Show("The VR argument is not valid.");
-                    return;//the vr argument was not valid
                 }
 
                 string arg_dcsExeFileLocation = args[0];
 
-                string arg_dcsOptionsLuaFileLocation = args[2];
-                string arg_widthOrDcsNewOptionsLuaFileLocation = args[3];
-
-
-                int arg_width;//init the int for the width of the screen
-                bool success = int.TryParse(args[3], out arg_width);//if it can be parsed
-
-                if (success)//if "success" is true, then the parse was good and it's an int
+                if (!System.IO.File.Exists(args[3]))
                 {
-                    Console.WriteLine(arg_width + " is an int.");//debug
-                                                                 //because of this we revert to a "condition 2", from the old version
-                }
-                else//if "success" is false, then the parse was bad and it's a string
-                {
-                    Console.WriteLine(arg_widthOrDcsNewOptionsLuaFileLocation + " is an string.");//debug
-
-
-                    //code for the file swap here
-                    System.IO.File.Delete(arg_widthOrDcsNewOptionsLuaFileLocation + ".bak");//deletes the backup file
-                    System.IO.File.Move(arg_dcsOptionsLuaFileLocation, arg_widthOrDcsNewOptionsLuaFileLocation + ".bak");//moves the original options lua file to the backup location
-                                                                                                                         //File.Replace(arg_dcsNewOptionsLuaFileLocation, arg_dcsOptionsLuaFileLocation, null);//null or "Options.lua.bak"
-
-                    //Console.WriteLine("Replacing " + arg_dcsNewOptionsLuaFileLocation + "with " + arg_dcsOptionsLuaFileLocation);
-                    System.IO.File.Copy(arg_widthOrDcsNewOptionsLuaFileLocation, arg_dcsOptionsLuaFileLocation);//puts the replacement file into the original location
+                    MessageBox.Show("The DCS Options.lua file cannot be found. (Error 4)");
+                    return;
                 }
 
-                Console.WriteLine(arg_dcsExeFileLocation);//debug
-                Console.WriteLine(arg_dcsVrOrNoVr);//debug
-                Console.WriteLine(arg_widthOrDcsNewOptionsLuaFileLocation);//debug
+                string arg_dcsOptionsLuaFileLocation = args[3];
 
-                Process.Start(@arg_dcsExeFileLocation, vrargument);
+                string arg_dcsVrOrNoVr = args[1];
+                string vrArgument;
+                //determine if the user wants to use VR or not
+                if (arg_dcsVrOrNoVr.Equals("vr"))
+                {
+                    vrArgument = ("--force_enable_VR");
+                }
+                else if (arg_dcsVrOrNoVr.Equals("novr"))
+                {
+                    vrArgument = ("--force_disable_VR");
+                }
+                else//if there isnt a matching entry, just quit
+                {
+                    MessageBox.Show("The VR argument is not valid. (Error 4)");
+                    return;//the vr argument was not valid
+                }
+
+                string arg_dcsLauncher = args[2];
+                string launcherArgument;
+                //determine if the user wants to use VR or not
+                if (arg_dcsLauncher.Equals("launcher"))
+                {
+                    launcherArgument = ("");
+                }
+                else if (arg_dcsLauncher.Equals("no-launcher"))
+                {
+                    launcherArgument = ("--no-launcher");
+                }
+                else//if there isnt a matching entry, just quit
+                {
+                    MessageBox.Show("The launcher argument is not valid. (Error 4)");
+                    return;//the launcher argument was not valid
+                }
+
+                string arg_NewOptionsLuaFileLocation = args[3];
+
+                // run the options lua that was selected.
+
+                Process.Start(@arg_dcsExeFileLocation, vrArgument + " " + launcherArgument);
             }//end of condition 4
 
-            else if (args.Length == 5)//only width and height was entered. replace the original option
-            {                          //lua with them
-                Console.WriteLine("Condition 5");
+            else if (args.Length == 5)//
+            {
+                //MessageBox.Show("Condition 5");// debug
 
                 //file exists checks
                 if (!System.IO.File.Exists(args[0]))
                 {
-                    Console.WriteLine("The DCS exe path cannot be found.");
-                    MessageBox.Show("The DCS exe path cannot be found.");
-                    return;
-                }
-
-                if (!System.IO.File.Exists(args[2]))
-                {
-                    Console.WriteLine("The DCS Options.lua file cannot be found.");
-                    MessageBox.Show("The DCS Options.lua file cannot be found.");
-                    return;
-                }
-
-                string arg_dcsVrOrNoVr = args[1];
-                string vrargument;
-                //determine if the user wants to use VR or not
-                if (arg_dcsVrOrNoVr.Equals("vr"))
-                {
-                    vrargument = ("--force_enable_VR");
-                }
-                else if (arg_dcsVrOrNoVr.Equals("novr"))
-                {
-                    vrargument = ("--force_disable_VR");
-                }
-                else//if there isnt a matching entry, just quit
-                {
-                    Console.WriteLine("The VR argument is not valid.");
-                    MessageBox.Show("The VR argument is not valid.");
-                    return;//the vr argument was not valid
-                }
-
-                string arg_dcsExeFileLocation = args[0];
-
-                string arg_dcsOptionsLuaFileLocation = args[2];
-
-                int arg_width;
-                bool success_width = int.TryParse(args[3], out arg_width);
-
-
-                int arg_height;//init the int for the height of the screen
-                bool success_height = int.TryParse(args[4], out arg_height);//if it can be parsed
-
-                if (success_width) //if "success" is true, then the parse was good and it's an int
-                {
-                    if (success_height)//if "success" is true again, then the parse was good and it's an int
-                    {
-                        Console.WriteLine(arg_width + " is the width.");//debug
-                        Console.WriteLine(arg_height + " is the height.");//debug
-                    }
-                    else//if "success" is false, then the parses were bad
-                    {
-                        Console.WriteLine("The the height argument is not valid.");
-                        MessageBox.Show("The the height argument is not valid.");
-                        return;//quit
-                    }
-                }
-                else//if "success" is false, then the parses were bad
-                {
-                    Console.WriteLine("The the width argument is not valid.");
-                    MessageBox.Show("The the width argument is not valid.");
-                    return;//quit
-                }
-
-                Console.WriteLine(arg_dcsExeFileLocation);//debug
-                Console.WriteLine(arg_dcsVrOrNoVr);//debug
-
-                var optionsLuaContents = LsonVars.Parse(System.IO.File.ReadAllText(arg_dcsOptionsLuaFileLocation));//put the contents of the options lua file into a lua read
-                optionsLuaContents["options"]["graphics"]["width"] = arg_width;//swap in the users width
-                optionsLuaContents["options"]["graphics"]["height"] = arg_height;//swap in the users height
-                System.IO.File.WriteAllText(arg_dcsOptionsLuaFileLocation, LsonVars.ToString(optionsLuaContents)); // serialize back to a file
-
-                Process.Start(@arg_dcsExeFileLocation, vrargument);//run the program
-            }//end of condition 5
-            else if (args.Length == 6)//every arg has been fulfilled
-            {                           //first replace the options lua
-                                        //then replace the width and height
-                Console.WriteLine("Condition 6");
-
-                //file exists checks
-                if (!System.IO.File.Exists(args[0]))
-                {
-                    Console.WriteLine("The DCS exe path cannot be found.");
-                    MessageBox.Show("The DCS exe path cannot be found.");
-                    return;
-                }
-
-                if (!System.IO.File.Exists(args[2]))
-                {
-                    Console.WriteLine("The DCS Options.lua file cannot be found.");
-                    MessageBox.Show("The DCS Options.lua file cannot be found.");
+                    MessageBox.Show("The DCS exe path cannot be found. (Error 5)");
                     return;
                 }
 
                 if (!System.IO.File.Exists(args[3]))
                 {
-                    Console.WriteLine("The replacement DCS Options.lua file cannot be found.");
-                    MessageBox.Show("The replacement DCS Options.lua file cannot be found.");
+                    MessageBox.Show("The DCS Options.lua file cannot be found. (Error 5)");
                     return;
                 }
 
                 string arg_dcsVrOrNoVr = args[1];
-                string vrargument;
+                string vrArgument;
                 //determine if the user wants to use VR or not
                 if (arg_dcsVrOrNoVr.Equals("vr"))
                 {
-                    vrargument = ("--force_enable_VR");
+                    vrArgument = ("--force_enable_VR");
                 }
                 else if (arg_dcsVrOrNoVr.Equals("novr"))
                 {
-                    vrargument = ("--force_disable_VR");
+                    vrArgument = ("--force_disable_VR");
                 }
                 else//if there isnt a matching entry, just quit
                 {
-                    Console.WriteLine("The VR argument is not valid.");
-                    MessageBox.Show("The VR argument is not valid.");
+                    MessageBox.Show("The VR argument is not valid. (Error 5)");
                     return;//the vr argument was not valid
                 }
 
+                string arg_dcsLauncher = args[2];
+                string launcherArgument;
+                //determine if the user wants to use VR or not
+                if (arg_dcsLauncher.Equals("launcher"))
+                {
+                    launcherArgument = ("");
+                }
+                else if (arg_dcsLauncher.Equals("no-launcher"))
+                {
+                    launcherArgument = ("--no-launcher");
+                }
+                else//if there isnt a matching entry, just quit
+                {
+                    MessageBox.Show("The launcher argument is not valid. (Error 5)");
+                    return;//the launcher argument was not valid
+                }
+
+                string arg_dcsOptionsLuaFileLocation = args[3];
+                string arg_dcsNewOptionsLuaFileLocation = args[4];
+
+                //code for the file swap here
+                System.IO.File.Delete(arg_dcsNewOptionsLuaFileLocation + ".bak");//deletes the backup file
+                System.IO.File.Move(arg_dcsOptionsLuaFileLocation, arg_dcsNewOptionsLuaFileLocation + ".bak");//moves the original options lua file to the backup location
+                                                                                                              //File.Replace(arg_dcsNewOptionsLuaFileLocation, arg_dcsOptionsLuaFileLocation, null);//null or "Options.lua.bak"
+
+                System.IO.File.Copy(arg_dcsNewOptionsLuaFileLocation, arg_dcsOptionsLuaFileLocation);//puts the replacement file into the original location
 
                 string arg_dcsExeFileLocation = args[0];
 
-                string arg_dcsOptionsLuaFileLocation = args[2];
-                string arg_dcsNewOptionsLuaFileLocation = args[3];
+                Process.Start(@arg_dcsExeFileLocation, vrArgument + " " + launcherArgument);//run the program
+            }//end of condition 5
+            else if (args.Length == 6)//basic plus height and width, no swap
+            {                           //first replace the options lua
+                                        //then replace the width and height
+
+                //file exists checks
+                if (!System.IO.File.Exists(args[0]))
+                {
+                    MessageBox.Show("The DCS exe path cannot be found. (Error 6)");
+                    return;
+                }
+
+                if (!System.IO.File.Exists(args[3]))
+                {
+                    MessageBox.Show("The DCS Options.lua file cannot be found. (Error 6)");
+                    return;
+                }
+
+                string arg_dcsVrOrNoVr = args[1];
+                string vrArgument;
+                //determine if the user wants to use VR or not
+                if (arg_dcsVrOrNoVr.Equals("vr"))
+                {
+                    vrArgument = ("--force_enable_VR");
+                }
+                else if (arg_dcsVrOrNoVr.Equals("novr"))
+                {
+                    vrArgument = ("--force_disable_VR");
+                }
+                else//if there isnt a matching entry, just quit
+                {
+                    MessageBox.Show("The VR argument is not valid. (Error 6)");
+                    return;//the vr argument was not valid
+                }
+
+                string arg_dcsLauncher = args[2];
+                string launcherArgument;
+                //determine if the user wants to use VR or not
+                if (arg_dcsLauncher.Equals("launcher"))
+                {
+                    launcherArgument = ("");
+                }
+                else if (arg_dcsLauncher.Equals("no-launcher"))
+                {
+                    launcherArgument = ("--no-launcher");
+                }
+                else//if there isnt a matching entry, just quit
+                {
+                    MessageBox.Show("The launcher argument is not valid. (Error 6)");
+                    return;//the launcher argument was not valid
+                }
+
+                string arg_dcsExeFileLocation = args[0];
+
+                string arg_dcsOptionsLuaFileLocation = args[3];
 
                 int arg_width;
                 bool success_width = int.TryParse(args[4], out arg_width);
@@ -433,44 +414,127 @@ namespace DCS_Shortcut_Generator
                 {
                     if (success_height)//if "success" is true again, then the parse was good and it's an int
                     {
-                        Console.WriteLine(arg_width + " is the width.");//debug
-                        Console.WriteLine(arg_height + " is the height.");//debug
+                        // continue...
                     }
                     else//if "success" is false, then the parses were bad
                     {
-                        Console.WriteLine("The the height argument is not valid.");
-                        MessageBox.Show("The the height argument is not valid.");
+                        MessageBox.Show("The the height argument is not valid. (Error 6)");
                         return;//quit
                     }
                 }
                 else//if "success" is false, then the parses were bad
                 {
-                    Console.WriteLine("The the width argument is not valid.");
-                    MessageBox.Show("The the width argument is not valid.");
+                    MessageBox.Show("The the width argument is not valid. (Error 6)");
                     return;//quit
                 }
-
-                Console.WriteLine(arg_dcsExeFileLocation);//debug
-                Console.WriteLine(arg_dcsVrOrNoVr);//debug
-                Console.WriteLine(arg_dcsOptionsLuaFileLocation);//debug
-                Console.WriteLine(arg_dcsNewOptionsLuaFileLocation);//debug
-
-                //code for the file swap here
-                System.IO.File.Delete(arg_dcsNewOptionsLuaFileLocation + ".bak");//deletes the backup file
-                System.IO.File.Move(arg_dcsOptionsLuaFileLocation, arg_dcsNewOptionsLuaFileLocation + ".bak");//moves the original options lua file to the backup location
-                                                                                                    //File.Replace(arg_dcsNewOptionsLuaFileLocation, arg_dcsOptionsLuaFileLocation, null);//null or "Options.lua.bak"
-
-                //Console.WriteLine("Replacing " + arg_dcsNewOptionsLuaFileLocation + "with " + arg_dcsOptionsLuaFileLocation);
-                System.IO.File.Copy(arg_dcsNewOptionsLuaFileLocation, arg_dcsOptionsLuaFileLocation);//puts the replacement file into the original location
-
-                Console.WriteLine("Width is: " + arg_width + ". Height is: " + arg_height);
+              
                 var optionsLuaContents = LsonVars.Parse(System.IO.File.ReadAllText(arg_dcsOptionsLuaFileLocation));//put the contents of the options lua file into a lua read
                 optionsLuaContents["options"]["graphics"]["width"] = arg_width;//swap in the users width
                 optionsLuaContents["options"]["graphics"]["height"] = arg_height;//swap in the users height
                 System.IO.File.WriteAllText(arg_dcsOptionsLuaFileLocation, LsonVars.ToString(optionsLuaContents)); // serialize back to a file
 
-                Process.Start(@arg_dcsExeFileLocation, vrargument);//run the program
+                Process.Start(@arg_dcsExeFileLocation, vrArgument + " " + launcherArgument);//run the program
             }//end of condition 6
+            else if (args.Length == 7)// height and width, and swap
+            {                           //first replace the options lua
+                                        //then replace the width and height
+            
+                //MessageBox.Show("Condition 7");// debug
+                //file exists checks
+                if (!System.IO.File.Exists(args[0]))
+                {
+                    MessageBox.Show("The DCS exe path cannot be found. (Error 7)");
+                    return;
+                }
+
+                if (!System.IO.File.Exists(args[3]))
+                {
+                    MessageBox.Show("The DCS Options.lua file cannot be found. (Error 7)");
+                    return;
+                }
+
+                if (!System.IO.File.Exists(args[4]))
+                {
+                    MessageBox.Show("The replacement DCS Options.lua file cannot be found. (Error 7)");
+                    return;
+                }
+
+                string arg_dcsVrOrNoVr = args[1];
+                string vrArgument;
+                //determine if the user wants to use VR or not
+                if (arg_dcsVrOrNoVr.Equals("vr"))
+                {
+                    vrArgument = ("--force_enable_VR");
+                }
+                else if (arg_dcsVrOrNoVr.Equals("novr"))
+                {
+                    vrArgument = ("--force_disable_VR");
+                }
+                else//if there isnt a matching entry, just quit
+                {
+                    MessageBox.Show("The VR argument is not valid. (Error 7)");
+                    return;//the vr argument was not valid
+                }
+
+                string arg_dcsLauncher = args[2];
+                string launcherArgument;
+                //determine if the user wants to use VR or not
+                if (arg_dcsLauncher.Equals("launcher"))
+                {
+                    launcherArgument = ("");
+                }
+                else if (arg_dcsLauncher.Equals("no-launcher"))
+                {
+                    launcherArgument = ("--no-launcher");
+                }
+                else//if there isnt a matching entry, just quit
+                {
+                    MessageBox.Show("The launcher argument is not valid. (Error 7)");
+                    return;//the launcher argument was not valid
+                }
+
+
+                string arg_dcsExeFileLocation = args[0];
+
+                string arg_dcsOptionsLuaFileLocation = args[3];
+                string arg_dcsNewOptionsLuaFileLocation = args[4];
+
+                int arg_width;
+                bool success_width = int.TryParse(args[5], out arg_width);
+                int arg_height;//init the int for the height of the screen
+                bool success_height = int.TryParse(args[6], out arg_height);//if it can be parsed
+
+                if (success_width) //if "success" is true, then the parse was good and it's an int
+                {
+                    if (success_height)//if "success" is true again, then the parse was good and it's an int
+                    {
+                        // continue...
+                    }
+                    else//if "success" is false, then the parses were bad
+                    {
+                        MessageBox.Show("The the height argument is not valid. (Error 7)");
+                        return;//quit
+                    }
+                }
+                else//if "success" is false, then the parses were bad
+                {
+                    MessageBox.Show("The the width argument is not valid. (Error 7)");
+                    return;//quit
+                }
+
+                //code for the file swap here
+                System.IO.File.Delete(arg_dcsNewOptionsLuaFileLocation + ".bak");//deletes the backup file
+                System.IO.File.Move(arg_dcsOptionsLuaFileLocation, arg_dcsNewOptionsLuaFileLocation + ".bak");//moves the original options lua file to the backup location
+                
+                System.IO.File.Copy(arg_dcsNewOptionsLuaFileLocation, arg_dcsOptionsLuaFileLocation);//puts the replacement file into the original location
+
+               var optionsLuaContents = LsonVars.Parse(System.IO.File.ReadAllText(arg_dcsOptionsLuaFileLocation));//put the contents of the options lua file into a lua read
+                optionsLuaContents["options"]["graphics"]["width"] = arg_width;//swap in the users width
+                optionsLuaContents["options"]["graphics"]["height"] = arg_height;//swap in the users height
+                System.IO.File.WriteAllText(arg_dcsOptionsLuaFileLocation, LsonVars.ToString(optionsLuaContents)); // serialize back to a file
+
+                Process.Start(@arg_dcsExeFileLocation, vrArgument + " " + launcherArgument);//run the program
+            }//end of condition 7
         }
 
         //https://stackoverflow.com/questions/10315188/open-file-dialog-and-select-a-file-using-wpf-controls-and-c-sharp
@@ -523,6 +587,16 @@ namespace DCS_Shortcut_Generator
                 dcsVrOption = "vr";
             }
 
+            string dcsLauncherOption;
+            if (comboBox_launcher.SelectedIndex == 0)//0 is disabled, 1 is enabled
+            {
+                dcsLauncherOption = "no-launcher";
+            }
+            else
+            {
+                dcsLauncherOption = "launcher";
+            }
+
             //https://stackoverflow.com/questions/1177872/strip-double-quotes-from-a-string-in-net
 
             string dcsOptionsNewFile = textBlock_userOptionsNewFile.Text;//could be blank
@@ -533,6 +607,7 @@ namespace DCS_Shortcut_Generator
             //string character length check of less than 259
             string generatedArguments = "\"" + dcsExeFile + "\" " +
                 "\"" + dcsVrOption + "\" " +
+                "\"" + dcsLauncherOption + "\" " +
                 "\"" + dcsOptionsFile + "\" " +
                 "\"" + dcsOptionsNewFile + "\" " +
                 "\"" + dcsWidth + "\" " +
@@ -560,6 +635,7 @@ namespace DCS_Shortcut_Generator
             //this is doubled up for some reason, above
             generatedArguments = "\"" + dcsExeFile + "\" " +
                 "\"" + dcsVrOption + "\" " +
+                "\"" + dcsLauncherOption + "\" " +
                 "\"" + dcsOptionsFile + "\" " +
                 "\"" + dcsOptionsNewFile + "\" " +
                 "\"" + dcsWidth + "\" " +
@@ -590,7 +666,7 @@ namespace DCS_Shortcut_Generator
             dlg.DefaultExt = ".exe";
             dlg.Filter = "exe files (*.exe)|*.exe";//pick an exe only
 
-            dlg.Title = "Example: " + @"C:\Program Files\Eagle Dynamics\DCS World\bin\DCS.exe";
+            dlg.Title = "Example: " + @"C:\Program Files\Eagle Dynamics\DCS World\bin-mt\DCS.exe";
             // Display OpenFileDialog by calling ShowDialog method 
             Nullable<bool> result = dlg.ShowDialog();
 
@@ -657,11 +733,14 @@ namespace DCS_Shortcut_Generator
                 return;
             }
 
-            if (textBlock_userOptionsFile.Text.Equals(""))//nothing was entered
-            {
-                System.Windows.MessageBox.Show("Select your Options lua file.");
-                return;
-            }
+            // sepection an options lua is not necessary. if not selected, will use
+            // whatever dcs generates
+
+            //if (textBlock_userOptionsFile.Text.Equals(""))//nothing was entered
+            //{
+            //    System.Windows.MessageBox.Show("Select your Options lua file.");
+            //    return;
+            //}
 
             if (textBlock_userShortcutName.Text.Equals(""))//nothing was entered
             {
